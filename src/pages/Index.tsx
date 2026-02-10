@@ -85,8 +85,8 @@ const Index = () => {
           <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-primary/5 blur-2xl" />
         </motion.div>
 
-        <div className="container mx-auto px-4 py-20 md:py-32">
-          <div className="grid gap-12 md:grid-cols-2 items-center">
+        <div className="container mx-auto px-4 py-12 md:py-32">
+          <div className="flex flex-col-reverse gap-8 md:grid md:grid-cols-2 md:gap-12 items-center">
             <motion.div
               style={{ y: heroTextY }}
               initial={{ opacity: 0, x: -30 }}
@@ -97,14 +97,14 @@ const Index = () => {
                 <Sparkles className="h-4 w-4" />
                 Psicanalista & Terapeuta Energética
               </div>
-              <h1 className="font-display text-4xl md:text-6xl font-semibold text-foreground leading-tight mb-6">
+              <h1 className="font-display text-3xl md:text-6xl font-semibold text-foreground leading-tight mb-4 md:mb-6">
                 Yara <span className="text-gradient-gold">Haraguti</span>
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6 md:mb-8 max-w-lg">
                 Transforme sua vida através do autoconhecimento e da cura energética. 
                 Um espaço de acolhimento, escuta e renovação para você se reconectar com sua essência.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                 <Link to="/contato">
                   <Button size="lg" className="gap-2">
                     Agendar Sessão
@@ -128,7 +128,7 @@ const Index = () => {
             >
               <motion.div
                 style={{ scale: heroImageScale }}
-                className="relative w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg"
+                className="relative w-48 h-48 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg"
               >
                 <img src={yaraFoto} alt="Yara Haraguti - Psicanalista e Terapeuta Energética" className="w-full h-full object-cover object-top" />
               </motion.div>
@@ -138,7 +138,7 @@ const Index = () => {
       </section>
 
       {/* Sobre Mim */}
-      <section ref={sobreRef} className="py-16 md:py-24 relative">
+      <section ref={sobreRef} className="py-12 md:py-24 relative">
         <div className="container mx-auto px-4">
           <motion.div
             style={{ y: sobreY }}
@@ -148,8 +148,8 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-semibold mb-6">Sobre Mim</h2>
-            <p className="text-muted-foreground leading-relaxed text-lg">
+            <h2 className="font-display text-2xl md:text-4xl font-semibold mb-4 md:mb-6">Sobre Mim</h2>
+            <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
               Sou Yara Haraguti, Psicanalista e Terapeuta Energética. Minha missão é guiar você em uma jornada 
               de autoconhecimento e cura, unindo a profundidade da psicanálise com a potência das terapias energéticas. 
               Acredito que cada pessoa carrega dentro de si a capacidade de se transformar — e estou aqui para 
@@ -160,7 +160,7 @@ const Index = () => {
       </section>
 
       {/* Serviços */}
-      <section ref={servicosRef} className="py-16 md:py-24 gradient-spiritual relative">
+      <section ref={servicosRef} className="py-12 md:py-24 gradient-spiritual relative">
         <div className="container mx-auto px-4">
           <motion.div
             style={{ y: servicosTitleY }}
@@ -170,13 +170,13 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-semibold mb-4">Meus Serviços</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Conheça as diferentes formas de atendimento que ofereço para apoiar sua transformação.
+            <h2 className="font-display text-2xl md:text-4xl font-semibold mb-3 md:mb-4">Meus Serviços</h2>
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto">
+              Conheça as formas de atendimento que ofereço para apoiar sua transformação.
             </p>
           </motion.div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+          <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {services.map((service, index) => (
               <motion.div
                 key={service.path}
