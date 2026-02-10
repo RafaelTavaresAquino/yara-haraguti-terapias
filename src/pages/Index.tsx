@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Sparkles, Brain, Zap, Scale, Users, Briefcase, ArrowRight } from "lucide-react";
 import yaraFoto from "@/assets/yara-foto.jpg";
 import { Button } from "@/components/ui/button";
@@ -39,13 +40,55 @@ const services = [
 ];
 
 const Index = () => {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const sobreRef = useRef<HTMLDivElement>(null);
+  const servicosRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const { scrollYProgress: sobreScroll } = useScroll({
+    target: sobreRef,
+    offset: ["start end", "end start"],
+  });
+
+  const { scrollYProgress: servicosScroll } = useScroll({
+    target: servicosRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Hero parallax
+  const heroTextY = useTransform(heroScroll, [0, 1], [0, -80]);
+  const heroImageY = useTransform(heroScroll, [0, 1], [0, -40]);
+  const heroImageScale = useTransform(heroScroll, [0, 1], [1, 1.1]);
+  const heroBgY = useTransform(heroScroll, [0, 1], [0, 60]);
+
+  // Sobre parallax
+  const sobreY = useTransform(sobreScroll, [0, 1], [60, -60]);
+
+  // Serviços parallax
+  const servicosTitleY = useTransform(servicosScroll, [0, 0.5], [40, 0]);
+
   return (
-    <div>
+    <div className="overflow-hidden">
       {/* Hero */}
-      <section className="relative gradient-hero overflow-hidden">
+      <section ref={heroRef} className="relative gradient-hero overflow-hidden">
+        {/* Floating decorative elements */}
+        <motion.div
+          style={{ y: heroBgY }}
+          className="absolute inset-0 pointer-events-none"
+        >
+          <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute bottom-10 right-20 w-48 h-48 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-primary/5 blur-2xl" />
+        </motion.div>
+
         <div className="container mx-auto px-4 py-20 md:py-32">
           <div className="grid gap-12 md:grid-cols-2 items-center">
             <motion.div
+              style={{ y: heroTextY }}
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7 }}
@@ -77,23 +120,28 @@ const Index = () => {
             </motion.div>
 
             <motion.div
+              style={{ y: heroImageY }}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
               className="flex justify-center"
             >
-              <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg">
+              <motion.div
+                style={{ scale: heroImageScale }}
+                className="relative w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg"
+              >
                 <img src={yaraFoto} alt="Yara Haraguti - Psicanalista e Terapeuta Energética" className="w-full h-full object-cover object-top" />
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Sobre Mim */}
-      <section className="py-16 md:py-24">
+      <section ref={sobreRef} className="py-16 md:py-24 relative">
         <div className="container mx-auto px-4">
           <motion.div
+            style={{ y: sobreY }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -112,9 +160,10 @@ const Index = () => {
       </section>
 
       {/* Serviços */}
-      <section className="py-16 md:py-24 gradient-spiritual">
+      <section ref={servicosRef} className="py-16 md:py-24 gradient-spiritual relative">
         <div className="container mx-auto px-4">
           <motion.div
+            style={{ y: servicosTitleY }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -131,13 +180,14 @@ const Index = () => {
             {services.map((service, index) => (
               <motion.div
                 key={service.path}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.1, type: "spring", stiffness: 100 }}
+                whileHover={{ y: -8, transition: { duration: 0.25 } }}
               >
                 <Link to={service.path}>
-                  <Card className="h-full border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
+                  <Card className="h-full border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-lg hover:border-primary/30 transition-all group cursor-pointer">
                     <CardContent className="p-6">
                       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                         <service.icon className="h-6 w-6" />
@@ -145,7 +195,7 @@ const Index = () => {
                       <h3 className="font-display text-xl font-semibold mb-2">{service.title}</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">{service.description}</p>
                       <div className="mt-4 flex items-center gap-1 text-sm text-primary font-medium">
-                        Saiba mais <ArrowRight className="h-3 w-3" />
+                        Saiba mais <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </CardContent>
                   </Card>
