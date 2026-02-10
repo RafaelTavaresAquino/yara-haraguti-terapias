@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, Brain, Zap, Scale, Users, Briefcase, ArrowRight } from "lucide-react";
+import yaraFoto from "@/assets/yara-foto.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -81,9 +82,8 @@ const Index = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="flex justify-center"
             >
-              <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-full bg-secondary/60 border-2 border-border/30 flex items-center justify-center">
-                <Sparkles className="h-20 w-20 text-primary/40" />
-                <p className="absolute bottom-4 text-xs text-muted-foreground">Foto em breve</p>
+              <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg">
+                <img src={yaraFoto} alt="Yara Haraguti - Psicanalista e Terapeuta Energética" className="w-full h-full object-cover object-top" />
               </div>
             </motion.div>
           </div>
