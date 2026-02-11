@@ -5,6 +5,7 @@ import { Sparkles, Brain, Zap, Scale, Users, Briefcase, ArrowRight } from "lucid
 import yaraFoto from "@/assets/yara-foto.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import TestimonialsList from "@/components/TestimonialsList";
 
 const services = [
   {
@@ -202,6 +203,33 @@ const Index = () => {
                 </Link>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+      {/* Depoimentos */}
+      <section className="py-12 md:py-24">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-2xl md:text-4xl font-semibold mb-3">Depoimentos</h2>
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto">
+              Veja o que meus clientes dizem sobre suas experiências.
+            </p>
+          </motion.div>
+          <div className="max-w-4xl mx-auto">
+            <TestimonialsList />
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/depoimentos">
+              <Button variant="outline" className="gap-2">
+                Deixar meu depoimento <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
