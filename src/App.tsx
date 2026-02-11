@@ -14,6 +14,9 @@ import PontoDeConexao from "./pages/PontoDeConexao";
 import ProTerapeuta from "./pages/ProTerapeuta";
 import Contato from "./pages/Contato";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import Depoimentos from "./pages/Depoimentos";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +33,9 @@ const AnimatedRoutes = () => {
         <Route path="/ponto-de-conexao" element={<PageTransition><PontoDeConexao /></PageTransition>} />
         <Route path="/pro-terapeuta" element={<PageTransition><ProTerapeuta /></PageTransition>} />
         <Route path="/contato" element={<PageTransition><Contato /></PageTransition>} />
+        <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/depoimentos" element={<PageTransition><Depoimentos /></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>

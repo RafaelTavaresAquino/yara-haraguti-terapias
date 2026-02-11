@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Ponto de Conexão", path: "/ponto-de-conexao" },
   { label: "Pró-Terapeuta", path: "/pro-terapeuta" },
   { label: "Contato", path: "/contato" },
+  { label: "Depoimentos", path: "/depoimentos" },
 ];
 
 const Header = () => {
