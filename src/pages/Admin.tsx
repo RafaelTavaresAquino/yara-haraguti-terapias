@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Star, Check, X, User, LogOut, Clock } from "lucide-react";
+import { Star, Check, X, User, LogOut, Clock, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Testimonial {
@@ -66,6 +66,20 @@ const Admin = () => {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: status === "approved" ? "Depoimento aprovado!" : "Depoimento rejeitado" });
+      fetchTestimonials();
+    }
+  };
+
+  const deleteTestimonial = async (id: string) => {
+    const { error } = await supabase
+      .from("testimonials")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Depoimento apagado!" });
       fetchTestimonials();
     }
   };
@@ -152,6 +166,16 @@ const Admin = () => {
                     </Button>
                   </div>
                 )}
+                <div className="flex gap-2 mt-4">
+                  {filter !== "pending" && filter === "rejected" && (
+                    <Button size="sm" variant="outline" onClick={() => updateStatus(t.id, "approved")} className="gap-1">
+                      <Check className="h-4 w-4" /> Aprovar
+                    </Button>
+                  )}
+                  <Button size="sm" variant="destructive" onClick={() => deleteTestimonial(t.id)} className="gap-1">
+                    <Trash2 className="h-4 w-4" /> Apagar
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
