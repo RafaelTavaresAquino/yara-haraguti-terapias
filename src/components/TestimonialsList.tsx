@@ -18,12 +18,7 @@ const TestimonialsList = () => {
 
   useEffect(() => {
     const fetchTestimonials = async () => {
-      const { data } = await supabase
-        .from("testimonials")
-        .select("id, name, content, rating, photo_url, created_at")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
-
+      const { data } = await supabase.rpc("get_approved_testimonials");
       setTestimonials((data as Testimonial[]) || []);
       setLoading(false);
     };
