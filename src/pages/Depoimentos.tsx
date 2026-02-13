@@ -177,7 +177,7 @@ const Depoimentos = () => {
             <p className="text-muted-foreground mb-4">Faça login para deixar seu depoimento</p>
             <Link to="/auth?redirect=/depoimentos">
               <Button className="gap-2">
-                <LogIn className="h-4 w-4" /> Entrar para deixar um depoimento
+                <LogIn className="h-4 w-4" /> Clique aqui para deixar seu depoimento
               </Button>
             </Link>
           </CardContent>
