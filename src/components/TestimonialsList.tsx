@@ -74,8 +74,9 @@ const TestimonialsList = ({ renderCtaCard }: TestimonialsListProps) => {
       if (error) throw error;
       return (data as Testimonial[]) || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000, // 30s cache
     retry: 1,
+    refetchOnMount: "always",
   });
 
   if (isLoading) {
