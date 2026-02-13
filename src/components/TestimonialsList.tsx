@@ -52,7 +52,8 @@ const TestimonialCard = ({ t }: { t: Testimonial }) => (
               ))}
             </div>
             <span className="text-xs text-muted-foreground">
-              {new Date(t.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+              {new Date(t.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}{" "}
+              {new Date(t.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
             </span>
           </div>
         </div>
@@ -93,19 +94,14 @@ const TestimonialsList = ({ renderCtaCard }: TestimonialsListProps) => {
     return renderCtaCard ? <>{renderCtaCard()}</> : <p className="text-muted-foreground text-center py-8">Nenhum depoimento realizado ainda.</p>;
   }
 
-  // Has testimonials: insert CTA card before the last (oldest) one
-  const allButLast = testimonials.slice(0, -1);
-  const lastOne = testimonials[testimonials.length - 1];
-
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      {allButLast.map((t) => (
-        <TestimonialCard key={t.id} t={t} />
-      ))}
       {renderCtaCard && (
         <div className="md:col-span-2">{renderCtaCard()}</div>
       )}
-      <TestimonialCard key={lastOne.id} t={lastOne} />
+      {testimonials.map((t) => (
+        <TestimonialCard key={t.id} t={t} />
+      ))}
     </div>
   );
 };
