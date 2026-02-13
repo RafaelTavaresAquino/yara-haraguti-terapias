@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -51,16 +51,16 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
-      const { error } = await supabase.auth.signOut({ scope: 'local' });
-      if (error) {
-        console.error("Sign out error:", error.message);
-      }
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+      await supabase.auth.signOut({ scope: 'local' });
     } catch (err) {
       console.error("Sign out exception:", err);
     }
-  };
+  }, []);
 
   return { user, session, loading, isAdmin, signOut };
 };
