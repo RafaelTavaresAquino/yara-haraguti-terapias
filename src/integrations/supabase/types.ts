@@ -100,7 +100,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      approved_testimonials_public: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string | null
+          name: string | null
+          photo_url: string | null
+          rating: number | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+          photo_url?: string | null
+          rating?: number | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+          photo_url?: string | null
+          rating?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_approved_testimonials: {
