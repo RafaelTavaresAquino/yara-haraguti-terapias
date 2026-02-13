@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -22,16 +22,20 @@ const Auth = () => {
   const { user, loading: authLoading, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
 
   useEffect(() => {
     if (!authLoading && user) {
-      if (isAdmin) {
+      if (redirectTo) {
+        navigate(redirectTo);
+      } else if (isAdmin) {
         navigate("/admin");
       } else {
         navigate("/depoimentos");
       }
     }
-  }, [user, authLoading, isAdmin, navigate]);
+  }, [user, authLoading, isAdmin, navigate, redirectTo]);
 
   const handleSubmit = async () => {
     const result = loginSchema.safeParse({ email, password });
@@ -69,16 +73,19 @@ const Auth = () => {
       if (error) {
         toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
       } else if (data.user) {
-        // Check admin role and redirect
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.user.id)
-          .eq("role", "admin");
-        if (roles && roles.length > 0) {
-          navigate("/admin");
+        if (redirectTo) {
+          navigate(redirectTo);
         } else {
-          navigate("/depoimentos");
+          const { data: roles } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.user.id)
+            .eq("role", "admin");
+          if (roles && roles.length > 0) {
+            navigate("/admin");
+          } else {
+            navigate("/depoimentos");
+          }
         }
       }
     }
