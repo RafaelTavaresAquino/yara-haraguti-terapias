@@ -52,7 +52,14 @@ export const useAuth = () => {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      if (error) {
+        console.error("Sign out error:", error.message);
+      }
+    } catch (err) {
+      console.error("Sign out exception:", err);
+    }
   };
 
   return { user, session, loading, isAdmin, signOut };
