@@ -65,9 +65,10 @@ const TestimonialCard = ({ t }: { t: Testimonial }) => (
 
 interface TestimonialsListProps {
   renderCtaCard?: () => React.ReactNode;
+  showEmptyMessage?: boolean;
 }
 
-const TestimonialsList = ({ renderCtaCard }: TestimonialsListProps) => {
+const TestimonialsList = ({ renderCtaCard, showEmptyMessage = false }: TestimonialsListProps) => {
   const { data: testimonials = [], isLoading } = useQuery<Testimonial[]>({
     queryKey: ["approved-testimonials"],
     queryFn: async () => {
@@ -94,6 +95,16 @@ const TestimonialsList = ({ renderCtaCard }: TestimonialsListProps) => {
     if (renderCtaCard) {
       const cta = renderCtaCard();
       if (cta) return <>{cta}</>;
+    }
+    if (showEmptyMessage) {
+      return (
+        <div className="text-center py-12 space-y-3">
+          <p className="text-lg font-medium text-foreground">Ainda não há depoimentos aprovados</p>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Incentive seus clientes a compartilharem suas experiências!
+          </p>
+        </div>
+      );
     }
     return null;
   }
