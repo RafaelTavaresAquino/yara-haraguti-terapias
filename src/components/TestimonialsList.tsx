@@ -95,14 +95,7 @@ const TestimonialsList = ({ renderCtaCard }: TestimonialsListProps) => {
       const cta = renderCtaCard();
       if (cta) return <>{cta}</>;
     }
-    return (
-      <div className="text-center py-12 space-y-3">
-        <p className="text-lg font-medium text-foreground">Ainda não há depoimentos aprovados</p>
-        <p className="text-muted-foreground max-w-md mx-auto">
-          Incentive seus clientes a compartilharem suas experiências!
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
