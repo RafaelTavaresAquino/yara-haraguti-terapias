@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles, Shield, LogOut, LogIn } from "lucide-react";
+import { Menu, X, Sparkles, Shield, LogOut, LogIn, Volume2, VolumeX, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 const navLinks = [
   { label: "Início", path: "/" },
@@ -23,6 +24,7 @@ const Header = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
   const { isAdmin, user, signOut } = useAuth();
+  const { isPlaying, isLoading, toggle } = useBackgroundMusic();
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -57,6 +59,22 @@ const Header = () => {
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggle}
+            disabled={isLoading}
+            className="text-muted-foreground hover:text-foreground mr-1"
+            title={isPlaying ? "Pausar música" : "Tocar música ambiente"}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : isPlaying ? (
+              <Volume2 className="h-4 w-4" />
+            ) : (
+              <VolumeX className="h-4 w-4" />
+            )}
+          </Button>
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -118,6 +136,21 @@ const Header = () => {
           <SheetContent side="right" className="w-72 bg-background">
             <SheetTitle className="font-display text-lg">Menu</SheetTitle>
             <nav className="mt-6 flex flex-col gap-2">
+              <Button
+                variant="ghost"
+                onClick={toggle}
+                disabled={isLoading}
+                className="w-full justify-start gap-2 px-4 py-3 text-muted-foreground hover:text-foreground"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isPlaying ? (
+                  <Volume2 className="h-4 w-4" />
+                ) : (
+                  <VolumeX className="h-4 w-4" />
+                )}
+                {isLoading ? "Gerando música..." : isPlaying ? "Pausar música" : "Tocar música"}
+              </Button>
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
