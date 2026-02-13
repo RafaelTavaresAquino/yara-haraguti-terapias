@@ -7,6 +7,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Star, Check, X, User, LogOut, Clock, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Testimonial {
   id: string;
@@ -32,6 +42,7 @@ const Admin = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("pending");
+  const [confirmAction, setConfirmAction] = useState<{ id: string; action: "approved" | "rejected" | "delete" } | null>(null);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -82,6 +93,22 @@ const Admin = () => {
       toast({ title: "Depoimento apagado!" });
       fetchTestimonials();
     }
+  };
+
+  const actionLabels: Record<string, string> = {
+    approved: "Aprovar",
+    rejected: "Rejeitar",
+    delete: "Apagar",
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmAction) return;
+    if (confirmAction.action === "delete") {
+      await deleteTestimonial(confirmAction.id);
+    } else {
+      await updateStatus(confirmAction.id, confirmAction.action);
+    }
+    setConfirmAction(null);
   };
 
   if (authLoading) {
@@ -158,21 +185,21 @@ const Admin = () => {
 
                 {filter === "pending" && (
                   <div className="flex gap-2 mt-4">
-                    <Button size="sm" onClick={() => updateStatus(t.id, "approved")} className="gap-1">
+                    <Button size="sm" onClick={() => setConfirmAction({ id: t.id, action: "approved" })} className="gap-1">
                       <Check className="h-4 w-4" /> Aprovar
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => updateStatus(t.id, "rejected")} className="gap-1">
+                    <Button size="sm" variant="outline" onClick={() => setConfirmAction({ id: t.id, action: "rejected" })} className="gap-1">
                       <X className="h-4 w-4" /> Rejeitar
                     </Button>
                   </div>
                 )}
                 <div className="flex gap-2 mt-4">
                   {filter !== "pending" && filter === "rejected" && (
-                    <Button size="sm" variant="outline" onClick={() => updateStatus(t.id, "approved")} className="gap-1">
+                    <Button size="sm" variant="outline" onClick={() => setConfirmAction({ id: t.id, action: "approved" })} className="gap-1">
                       <Check className="h-4 w-4" /> Aprovar
                     </Button>
                   )}
-                  <Button size="sm" variant="destructive" onClick={() => deleteTestimonial(t.id)} className="gap-1">
+                  <Button size="sm" variant="destructive" onClick={() => setConfirmAction({ id: t.id, action: "delete" })} className="gap-1">
                     <Trash2 className="h-4 w-4" /> Apagar
                   </Button>
                 </div>
@@ -181,6 +208,21 @@ const Admin = () => {
           ))}
         </div>
       )}
+
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmação</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você deseja {confirmAction ? actionLabels[confirmAction.action] : ""} o Depoimento?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm}>Confirmar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
