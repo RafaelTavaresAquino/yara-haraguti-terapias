@@ -19,24 +19,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const checkAdmin = useCallback(async (userId: string) => {
+    try {
+      const { data } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+      setIsAdmin(!!data);
+    } catch {
+      setIsAdmin(false);
+    }
+  }, []);
+
   useEffect(() => {
     // Set up listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          const { data } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .eq("role", "admin");
-          setIsAdmin(!!data && data.length > 0);
+          // Use setTimeout to avoid Supabase deadlock in auth callback
+          setTimeout(() => {
+            checkAdmin(session.user.id).then(() => setLoading(false));
+          }, 0);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
@@ -45,22 +55,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .eq("role", "admin")
-          .then(({ data }) => {
-            setIsAdmin(!!data && data.length > 0);
-            setLoading(false);
-          });
+        checkAdmin(session.user.id).then(() => setLoading(false));
       } else {
         setLoading(false);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkAdmin]);
 
   const signOut = useCallback(async () => {
     // Clear state immediately for instant UI feedback
