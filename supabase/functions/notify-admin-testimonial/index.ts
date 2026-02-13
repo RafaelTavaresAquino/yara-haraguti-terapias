@@ -148,30 +148,42 @@ serve(async (req) => {
 </body>
 </html>`;
 
-    // Send email via Resend
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "Yara Haraguti Terapias <onboarding@resend.dev>",
-        to: adminEmails,
-        subject: `✨ Novo depoimento de ${testimonialName} aguardando aprovação`,
-        html: htmlContent,
-      }),
-    });
+    // Send email via Resend - individually to handle sandbox limitations
+    const results = [];
+    for (const email of adminEmails) {
+      try {
+        const resendResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: "Yara Haraguti Terapias <onboarding@resend.dev>",
+            to: [email],
+            subject: `✨ Novo depoimento de ${testimonialName} aguardando aprovação`,
+            html: htmlContent,
+          }),
+        });
 
-    const resendData = await resendResponse.json();
-
-    if (!resendResponse.ok) {
-      throw new Error(`Resend API error [${resendResponse.status}]: ${JSON.stringify(resendData)}`);
+        const resendData = await resendResponse.json();
+        if (resendResponse.ok) {
+          console.log(`Email sent to ${email}:`, resendData);
+          results.push({ email, success: true, id: resendData.id });
+        } else {
+          console.warn(`Failed to send to ${email}:`, resendData);
+          results.push({ email, success: false, error: resendData.message });
+        }
+      } catch (err) {
+        console.warn(`Error sending to ${email}:`, err);
+        results.push({ email, success: false, error: String(err) });
+      }
     }
 
-    console.log("Admin notification email sent successfully:", resendData);
+    const anySuccess = results.some(r => r.success);
+    console.log("Notification results:", results);
 
-    return new Response(JSON.stringify({ success: true, emailId: resendData.id }), {
+    return new Response(JSON.stringify({ success: anySuccess, results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
