@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles, Shield, LogOut } from "lucide-react";
+import { Menu, X, Sparkles, Shield, LogOut, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -89,10 +89,22 @@ const Header = () => {
               )}
             </Link>
           )}
-          {user && (
+          {user ? (
             <Button variant="ghost" size="sm" onClick={signOut} className="gap-1 text-muted-foreground hover:text-foreground">
               <LogOut className="h-4 w-4" /> Sair
             </Button>
+          ) : (
+            <Link
+              to="/auth"
+              className={cn(
+                "px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1",
+                location.pathname === "/auth"
+                  ? "text-primary bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              )}
+            >
+              <LogIn className="h-4 w-4" /> Entrar
+            </Link>
           )}
         </nav>
 
@@ -140,10 +152,23 @@ const Header = () => {
                   )}
                 </Link>
               )}
-              {user && (
+              {user ? (
                 <Button variant="ghost" onClick={signOut} className="w-full justify-start gap-2 px-4 py-3 text-muted-foreground hover:text-foreground">
                   <LogOut className="h-4 w-4" /> Sair
                 </Button>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
+                    location.pathname === "/auth"
+                      ? "text-primary bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  )}
+                >
+                  <LogIn className="h-4 w-4" /> Entrar
+                </Link>
               )}
             </nav>
           </SheetContent>
