@@ -212,7 +212,7 @@ const Depoimentos = () => {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       <h1 className="font-display text-3xl md:text-4xl font-semibold mb-8">Depoimentos</h1>
-      <TestimonialsList renderCtaCard={renderCtaCard} />
+      <TestimonialsList renderCtaCard={renderCtaCard} showEmptyMessage={isAdmin} />
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="sm:max-w-md text-center">
