@@ -61,13 +61,25 @@ const Auth = () => {
         setIsSignUp(false);
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: result.data.email,
         password: result.data.password,
       });
       setLoading(false);
       if (error) {
         toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+      } else if (data.user) {
+        // Check admin role and redirect
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id)
+          .eq("role", "admin");
+        if (roles && roles.length > 0) {
+          navigate("/admin");
+        } else {
+          navigate("/depoimentos");
+        }
       }
     }
   };
