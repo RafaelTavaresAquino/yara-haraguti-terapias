@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sparkles, Shield, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const navLinks = [
   { label: "Início", path: "/" },
@@ -19,8 +20,30 @@ const navLinks = [
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
   const { isAdmin, user, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchPending = async () => {
+      const { count } = await supabase
+        .from("testimonials")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      setPendingCount(count || 0);
+    };
+    fetchPending();
+
+    const channel = supabase
+      .channel("pending-testimonials")
+      .on("postgres_changes", { event: "*", schema: "public", table: "testimonials" }, () => {
+        fetchPending();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [isAdmin]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -59,6 +82,11 @@ const Header = () => {
               )}
             >
               <Shield className="h-4 w-4" /> Admin
+              {pendingCount > 0 && (
+                <span className="ml-1 inline-flex items-center justify-center h-5 min-w-5 px-1 text-xs font-bold rounded-full bg-destructive text-destructive-foreground">
+                  {pendingCount}
+                </span>
+              )}
             </Link>
           )}
           {user && (
@@ -105,6 +133,11 @@ const Header = () => {
                   )}
                 >
                   <Shield className="h-4 w-4" /> Admin
+                  {pendingCount > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center h-5 min-w-5 px-1 text-xs font-bold rounded-full bg-destructive text-destructive-foreground">
+                      {pendingCount}
+                    </span>
+                  )}
                 </Link>
               )}
               {user && (
