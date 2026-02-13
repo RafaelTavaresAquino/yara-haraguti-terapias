@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -7,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Star, Upload, LogOut, Send } from "lucide-react";
+import { Star, Upload, Send, LogIn } from "lucide-react";
 import { z } from "zod";
 import TestimonialsList from "@/components/TestimonialsList";
+import { Link } from "react-router-dom";
 
 const testimonialSchema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(100),
@@ -18,8 +18,7 @@ const testimonialSchema = z.object({
 });
 
 const Depoimentos = () => {
-  const { user, loading: authLoading, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
@@ -27,12 +26,6 @@ const Depoimentos = () => {
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    }
-  }, [user, authLoading, navigate]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,88 +93,96 @@ const Depoimentos = () => {
     }
   };
 
-  if (authLoading) {
-    return <div className="flex items-center justify-center min-h-[60vh]"><p className="text-muted-foreground">Carregando...</p></div>;
-  }
-
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-display text-3xl md:text-4xl font-semibold">Deixe seu Depoimento</h1>
-        <Button variant="ghost" onClick={signOut} className="gap-2">
-          <LogOut className="h-4 w-4" /> Sair
-        </Button>
-      </div>
+      <h1 className="font-display text-3xl md:text-4xl font-semibold mb-8">Depoimentos</h1>
 
-      <Card className="mb-12">
-        <CardHeader>
-          <CardTitle className="font-display text-xl">Novo Depoimento</CardTitle>
-          <CardDescription>Compartilhe sua experiência. Seu depoimento será publicado após aprovação.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Seu nome"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            maxLength={100}
-          />
-
-          <Textarea
-            placeholder="Conte sobre sua experiência..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            maxLength={1000}
-            rows={4}
-          />
-
-          {/* Rating */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Avaliação</label>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  className="transition-colors"
-                >
-                  <Star
-                    className={`h-6 w-6 ${star <= rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Photo upload */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Foto (opcional)</label>
-            <div className="flex items-center gap-4">
-              {photoPreview && (
-                <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-border" />
-              )}
-              <label className="cursor-pointer">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-md border border-input bg-background hover:bg-secondary/50 transition-colors text-sm">
-                  <Upload className="h-4 w-4" />
-                  {photo ? "Trocar foto" : "Enviar foto"}
-                </div>
-                <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-              </label>
-            </div>
-          </div>
-
-          <Button onClick={handleSubmit} disabled={submitting} className="w-full gap-2">
-            {submitting ? "Enviando..." : "Enviar Depoimento"}
-            <Send className="h-4 w-4" />
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Approved testimonials */}
-      <div>
-        <h2 className="font-display text-2xl font-semibold mb-6">Depoimentos Aprovados</h2>
+      {/* Approved testimonials - visible to everyone */}
+      <div className="mb-12">
         <TestimonialsList />
       </div>
+
+      {/* Form section - only for logged in users */}
+      {authLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      ) : user ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-display text-xl">Deixe seu Depoimento</CardTitle>
+            <CardDescription>Compartilhe sua experiência. Seu depoimento será publicado após aprovação.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="Seu nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={100}
+            />
+
+            <Textarea
+              placeholder="Conte sobre sua experiência..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              maxLength={1000}
+              rows={4}
+            />
+
+            {/* Rating */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Avaliação</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="transition-colors"
+                  >
+                    <Star
+                      className={`h-6 w-6 ${star <= rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Photo upload */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Foto (opcional)</label>
+              <div className="flex items-center gap-4">
+                {photoPreview && (
+                  <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-border" />
+                )}
+                <label className="cursor-pointer">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-md border border-input bg-background hover:bg-secondary/50 transition-colors text-sm">
+                    <Upload className="h-4 w-4" />
+                    {photo ? "Trocar foto" : "Enviar foto"}
+                  </div>
+                  <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                </label>
+              </div>
+            </div>
+
+            <Button onClick={handleSubmit} disabled={submitting} className="w-full gap-2">
+              {submitting ? "Enviando..." : "Enviar Depoimento"}
+              <Send className="h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="text-center py-8">
+          <CardContent>
+            <p className="text-muted-foreground mb-4">Faça login para deixar seu depoimento</p>
+            <Link to="/auth">
+              <Button className="gap-2">
+                <LogIn className="h-4 w-4" /> Entrar para deixar um depoimento
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
