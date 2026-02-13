@@ -120,64 +120,33 @@ const Depoimentos = () => {
     }
   };
 
-  return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="font-display text-3xl md:text-4xl font-semibold mb-8">Depoimentos</h1>
+  const renderCtaCard = () => {
+    if (authLoading) return null;
 
-      {/* Approved testimonials - visible to everyone */}
-      <div className="mb-12">
-        <TestimonialsList />
-      </div>
-
-      {/* Form section - only for logged in users */}
-      {authLoading ? null : user ? (
+    if (user) {
+      return (
         <Card>
           <CardHeader>
             <CardTitle className="font-display text-xl">Deixe seu Depoimento</CardTitle>
             <CardDescription>Compartilhe sua experiência. Seu depoimento será publicado após aprovação.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Input
-              placeholder="Seu nome"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={100}
-            />
-
-            <Textarea
-              placeholder="Conte sobre sua experiência..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              maxLength={1000}
-              rows={4}
-            />
-
-            {/* Rating */}
+            <Input placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
+            <Textarea placeholder="Conte sobre sua experiência..." value={content} onChange={(e) => setContent(e.target.value)} maxLength={1000} rows={4} />
             <div>
               <label className="text-sm font-medium mb-2 block">Avaliação</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    className="transition-colors"
-                  >
-                    <Star
-                      className={`h-6 w-6 ${star <= rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`}
-                    />
+                  <button key={star} type="button" onClick={() => setRating(star)} className="transition-colors">
+                    <Star className={`h-6 w-6 ${star <= rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Photo upload */}
             <div>
               <label className="text-sm font-medium mb-2 block">Foto (opcional)</label>
               <div className="flex items-center gap-4">
-                {photoPreview && (
-                  <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-border" />
-                )}
+                {photoPreview && <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-border" />}
                 <label className="cursor-pointer">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-md border border-input bg-background hover:bg-secondary/50 transition-colors text-sm">
                     <Upload className="h-4 w-4" />
@@ -187,51 +156,49 @@ const Depoimentos = () => {
                 </label>
               </div>
             </div>
-
             <Button onClick={handleSubmit} disabled={submitting} className="w-full gap-2">
               {submitting ? "Enviando..." : "Enviar Depoimento"}
               <Send className="h-4 w-4" />
             </Button>
           </CardContent>
         </Card>
-      ) : (
-        <Card className="text-center py-8">
-          <CardContent className="space-y-4">
-            {magicLinkSent ? (
-              <>
-                <Mail className="h-10 w-10 mx-auto text-accent" />
-                <p className="text-foreground font-medium">E-mail enviado!</p>
-                <p className="text-muted-foreground text-sm">
-                  Verifique sua caixa de entrada e clique no link para acessar e deixar seu depoimento.
-                </p>
-              </>
-            ) : showEmailInput ? (
-              <>
-                <p className="text-muted-foreground mb-2">Informe seu e-mail para receber o link de acesso:</p>
-                <div className="flex gap-2 max-w-sm mx-auto">
-                  <Input
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={magicEmail}
-                    onChange={(e) => setMagicEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSendMagicLink()}
-                  />
-                  <Button onClick={handleSendMagicLink} disabled={sendingMagicLink}>
-                    {sendingMagicLink ? "Enviando..." : "Enviar"}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-muted-foreground mb-4">Compartilhe sua experiência conosco!</p>
-                <Button className="gap-2" onClick={() => setShowEmailInput(true)}>
-                  <LogIn className="h-4 w-4" /> Clique aqui para deixar seu depoimento
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      );
+    }
+
+    return (
+      <Card className="text-center py-8">
+        <CardContent className="space-y-4">
+          {magicLinkSent ? (
+            <>
+              <Mail className="h-10 w-10 mx-auto text-accent" />
+              <p className="text-foreground font-medium">E-mail enviado!</p>
+              <p className="text-muted-foreground text-sm">Verifique sua caixa de entrada e clique no link para acessar e deixar seu depoimento.</p>
+            </>
+          ) : showEmailInput ? (
+            <>
+              <p className="text-muted-foreground mb-2">Informe seu e-mail para receber o link de acesso:</p>
+              <div className="flex gap-2 max-w-sm mx-auto">
+                <Input type="email" placeholder="seu@email.com" value={magicEmail} onChange={(e) => setMagicEmail(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendMagicLink()} />
+                <Button onClick={handleSendMagicLink} disabled={sendingMagicLink}>{sendingMagicLink ? "Enviando..." : "Enviar"}</Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-muted-foreground mb-4">Compartilhe sua experiência conosco!</p>
+              <Button className="gap-2" onClick={() => setShowEmailInput(true)}>
+                <LogIn className="h-4 w-4" /> Clique aqui para deixar seu depoimento
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <h1 className="font-display text-3xl md:text-4xl font-semibold mb-8">Depoimentos</h1>
+      <TestimonialsList renderCtaCard={renderCtaCard} />
     </div>
   );
 };
