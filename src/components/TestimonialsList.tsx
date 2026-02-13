@@ -31,7 +31,7 @@ const TestimonialsList = () => {
   }
 
   if (testimonials.length === 0) {
-    return <p className="text-muted-foreground text-center py-8">Nenhum depoimento aprovado ainda.</p>;
+    return <p className="text-muted-foreground text-center py-8">Nenhum depoimento realizado ainda.</p>;
   }
 
   return (
