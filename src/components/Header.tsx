@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, Shield } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const navLinks = [
 const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -46,6 +48,19 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className={cn(
+                "px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1",
+                location.pathname === "/admin"
+                  ? "text-primary bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              )}
+            >
+              <Shield className="h-4 w-4" /> Admin
+            </Link>
+          )}
         </nav>
 
         {/* Mobile nav */}
@@ -73,6 +88,20 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
+                    location.pathname === "/admin"
+                      ? "text-primary bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  )}
+                >
+                  <Shield className="h-4 w-4" /> Admin
+                </Link>
+              )}
             </nav>
           </SheetContent>
         </Sheet>
