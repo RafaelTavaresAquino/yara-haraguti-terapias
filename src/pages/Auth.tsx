@@ -19,15 +19,19 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!authLoading && user) {
-      navigate("/depoimentos");
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/depoimentos");
+      }
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, isAdmin, navigate]);
 
   const handleSubmit = async () => {
     const result = loginSchema.safeParse({ email, password });
