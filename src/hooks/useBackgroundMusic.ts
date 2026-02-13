@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 const MUSIC_STORAGE_KEY = "yara-bg-music-playing";
 
@@ -106,10 +106,63 @@ export const useBackgroundMusic = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioNodesRef = useRef<{ masterGain: GainNode; nodes: AudioNode[] } | null>(null);
+  const autoStartedRef = useRef(false);
+
+  const startMusic = useCallback(async () => {
+    if (audioContextRef.current && isPlaying) return;
+    try {
+      if (!audioContextRef.current) {
+        const ctx = new AudioContext();
+        audioContextRef.current = ctx;
+        audioNodesRef.current = createAmbientAudio(ctx);
+      } else {
+        await audioContextRef.current.resume();
+        if (audioNodesRef.current) {
+          audioNodesRef.current.masterGain.gain.setTargetAtTime(
+            0.3,
+            audioContextRef.current.currentTime,
+            0.5
+          );
+        }
+      }
+      setIsPlaying(true);
+      sessionStorage.setItem(MUSIC_STORAGE_KEY, "true");
+    } catch (error) {
+      console.error("Failed to play ambient music:", error);
+    }
+  }, [isPlaying]);
+
+  // Auto-start on first user interaction
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    // If user previously muted, don't auto-start
+    if (sessionStorage.getItem(MUSIC_STORAGE_KEY) === "false") return;
+
+    const handleInteraction = () => {
+      if (autoStartedRef.current) return;
+      autoStartedRef.current = true;
+      startMusic();
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("scroll", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+
+    document.addEventListener("click", handleInteraction, { once: false });
+    document.addEventListener("scroll", handleInteraction, { once: false });
+    document.addEventListener("keydown", handleInteraction, { once: false });
+    document.addEventListener("touchstart", handleInteraction, { once: false });
+
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("scroll", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+  }, [startMusic]);
 
   const toggle = useCallback(async () => {
     if (isPlaying) {
-      // Fade out and suspend
       if (audioContextRef.current && audioNodesRef.current) {
         const { masterGain } = audioNodesRef.current;
         masterGain.gain.setTargetAtTime(0, audioContextRef.current.currentTime, 0.5);
@@ -120,28 +173,9 @@ export const useBackgroundMusic = () => {
       setIsPlaying(false);
       sessionStorage.setItem(MUSIC_STORAGE_KEY, "false");
     } else {
-      try {
-        if (!audioContextRef.current) {
-          const ctx = new AudioContext();
-          audioContextRef.current = ctx;
-          audioNodesRef.current = createAmbientAudio(ctx);
-        } else {
-          await audioContextRef.current.resume();
-          if (audioNodesRef.current) {
-            audioNodesRef.current.masterGain.gain.setTargetAtTime(
-              0.3,
-              audioContextRef.current.currentTime,
-              0.5
-            );
-          }
-        }
-        setIsPlaying(true);
-        sessionStorage.setItem(MUSIC_STORAGE_KEY, "true");
-      } catch (error) {
-        console.error("Failed to play ambient music:", error);
-      }
+      await startMusic();
     }
-  }, [isPlaying]);
+  }, [isPlaying, startMusic]);
 
   return { isPlaying, isLoading: false, toggle };
 };
