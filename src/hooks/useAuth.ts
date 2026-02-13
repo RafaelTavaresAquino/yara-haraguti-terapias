@@ -53,12 +53,13 @@ export const useAuth = () => {
 
   const signOut = useCallback(async () => {
     try {
-      setUser(null);
-      setSession(null);
-      setIsAdmin(false);
       await supabase.auth.signOut({ scope: 'local' });
     } catch (err) {
       console.error("Sign out exception:", err);
+    } finally {
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
     }
   }, []);
 
