@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles, Shield, LogOut, LogIn, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { Menu, X, Sparkles, Shield, LogOut, LogIn, Volume2, VolumeX } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -24,7 +24,7 @@ const Header = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
   const { isAdmin, user, signOut } = useAuth();
-  const { isPlaying, isLoading, toggle } = useBackgroundMusic();
+  const { isPlaying, toggle } = useBackgroundMusic();
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -63,13 +63,11 @@ const Header = () => {
             variant="ghost"
             size="icon"
             onClick={toggle}
-            disabled={isLoading}
+            
             className="text-muted-foreground hover:text-foreground mr-1"
             title={isPlaying ? "Pausar música" : "Tocar música ambiente"}
           >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : isPlaying ? (
+            {isPlaying ? (
               <Volume2 className="h-4 w-4" />
             ) : (
               <VolumeX className="h-4 w-4" />
@@ -139,17 +137,15 @@ const Header = () => {
               <Button
                 variant="ghost"
                 onClick={toggle}
-                disabled={isLoading}
+                
                 className="w-full justify-start gap-2 px-4 py-3 text-muted-foreground hover:text-foreground"
               >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isPlaying ? (
+                {isPlaying ? (
                   <Volume2 className="h-4 w-4" />
                 ) : (
                   <VolumeX className="h-4 w-4" />
                 )}
-                {isLoading ? "Gerando música..." : isPlaying ? "Pausar música" : "Tocar música"}
+                {isPlaying ? "Pausar música" : "Tocar música"}
               </Button>
               {navLinks.map((link) => (
                 <Link
