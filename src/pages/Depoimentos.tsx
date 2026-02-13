@@ -5,10 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Star, Upload, Send, LogIn, Mail } from "lucide-react";
+import { Star, Upload, Send, LogIn, Mail, CheckCircle2, XCircle } from "lucide-react";
 import { z } from "zod";
 import TestimonialsList from "@/components/TestimonialsList";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const testimonialSchema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(100),
@@ -18,7 +25,6 @@ const testimonialSchema = z.object({
 
 const Depoimentos = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
-  const { toast } = useToast();
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [rating, setRating] = useState(5);
@@ -29,11 +35,20 @@ const Depoimentos = () => {
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [sendingMagicLink, setSendingMagicLink] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"success" | "error">("success");
+  const [modalMessage, setModalMessage] = useState("");
+
+  const showModal = (type: "success" | "error", message: string) => {
+    setModalType(type);
+    setModalMessage(message);
+    setModalOpen(true);
+  };
 
   const handleSendMagicLink = async () => {
     const emailResult = z.string().trim().email("E-mail inválido").safeParse(magicEmail);
     if (!emailResult.success) {
-      toast({ title: "Erro", description: "Informe um e-mail válido", variant: "destructive" });
+      showModal("error", "Informe um e-mail válido.");
       return;
     }
 
@@ -47,10 +62,9 @@ const Depoimentos = () => {
     setSendingMagicLink(false);
 
     if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      showModal("error", error.message);
     } else {
       setMagicLinkSent(true);
-      toast({ title: "E-mail enviado!", description: "Verifique sua caixa de entrada para acessar." });
     }
   };
 
@@ -58,7 +72,7 @@ const Depoimentos = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        toast({ title: "Arquivo muito grande", description: "Máximo 2MB", variant: "destructive" });
+        showModal("error", "Arquivo muito grande. Máximo 2MB.");
         return;
       }
       setPhoto(file);
@@ -69,7 +83,7 @@ const Depoimentos = () => {
   const handleSubmit = async () => {
     const result = testimonialSchema.safeParse({ name, content, rating });
     if (!result.success) {
-      toast({ title: "Erro", description: result.error.errors[0].message, variant: "destructive" });
+      showModal("error", result.error.errors[0].message);
       return;
     }
 
@@ -86,7 +100,7 @@ const Depoimentos = () => {
         .upload(filePath, photo);
 
       if (uploadError) {
-        toast({ title: "Erro no upload", description: uploadError.message, variant: "destructive" });
+        showModal("error", "Erro no upload da foto. Tente novamente.");
         setSubmitting(false);
         return;
       }
@@ -109,9 +123,9 @@ const Depoimentos = () => {
     setSubmitting(false);
 
     if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      showModal("error", "Ocorreu um erro ao enviar seu depoimento. Tente novamente.");
     } else {
-      toast({ title: "Depoimento enviado!", description: "Aguarde a aprovação para aparecer no site." });
+      showModal("success", "Seu depoimento foi enviado com sucesso! Aguarde a aprovação para aparecer no site.");
       setName("");
       setContent("");
       setRating(5);
@@ -199,6 +213,27 @@ const Depoimentos = () => {
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       <h1 className="font-display text-3xl md:text-4xl font-semibold mb-8">Depoimentos</h1>
       <TestimonialsList renderCtaCard={renderCtaCard} />
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-md text-center">
+          <DialogHeader className="items-center">
+            {modalType === "success" ? (
+              <CheckCircle2 className="h-12 w-12 text-green-500 mb-2" />
+            ) : (
+              <XCircle className="h-12 w-12 text-destructive mb-2" />
+            )}
+            <DialogTitle>
+              {modalType === "success" ? "Enviado com sucesso!" : "Ops, algo deu errado"}
+            </DialogTitle>
+            <DialogDescription>{modalMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button onClick={() => setModalOpen(false)}>
+              {modalType === "success" ? "Fechar" : "Tentar novamente"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
