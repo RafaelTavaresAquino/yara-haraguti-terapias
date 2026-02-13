@@ -5,7 +5,7 @@ const MUSIC_STORAGE_KEY = "yara-bg-music-playing";
 // Procedural ambient music using Web Audio API - no external API needed
 const createAmbientAudio = (audioContext: AudioContext) => {
   const masterGain = audioContext.createGain();
-  masterGain.gain.value = 0.12;
+  masterGain.gain.value = 0.3;
   masterGain.connect(audioContext.destination);
 
   const nodes: AudioNode[] = [];
@@ -129,7 +129,7 @@ export const useBackgroundMusic = () => {
           await audioContextRef.current.resume();
           if (audioNodesRef.current) {
             audioNodesRef.current.masterGain.gain.setTargetAtTime(
-              0.12,
+              0.3,
               audioContextRef.current.currentTime,
               0.5
             );
