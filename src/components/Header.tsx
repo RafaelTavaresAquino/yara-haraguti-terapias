@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles, Shield } from "lucide-react";
+import { Menu, X, Sparkles, Shield, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -20,7 +20,7 @@ const navLinks = [
 const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -60,6 +60,11 @@ const Header = () => {
             >
               <Shield className="h-4 w-4" /> Admin
             </Link>
+          )}
+          {user && (
+            <Button variant="ghost" size="sm" onClick={signOut} className="gap-1 text-muted-foreground hover:text-foreground">
+              <LogOut className="h-4 w-4" /> Sair
+            </Button>
           )}
         </nav>
 
@@ -101,6 +106,11 @@ const Header = () => {
                 >
                   <Shield className="h-4 w-4" /> Admin
                 </Link>
+              )}
+              {user && (
+                <Button variant="ghost" onClick={signOut} className="w-full justify-start gap-2 px-4 py-3 text-muted-foreground hover:text-foreground">
+                  <LogOut className="h-4 w-4" /> Sair
+                </Button>
               )}
             </nav>
           </SheetContent>
