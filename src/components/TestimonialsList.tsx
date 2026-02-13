@@ -91,7 +91,18 @@ const TestimonialsList = ({ renderCtaCard }: TestimonialsListProps) => {
 
   // No testimonials: show only the CTA card
   if (testimonials.length === 0) {
-    return renderCtaCard ? <>{renderCtaCard()}</> : <p className="text-muted-foreground text-center py-8">Nenhum depoimento realizado ainda.</p>;
+    if (renderCtaCard) {
+      const cta = renderCtaCard();
+      if (cta) return <>{cta}</>;
+    }
+    return (
+      <div className="text-center py-12 space-y-3">
+        <p className="text-lg font-medium text-foreground">Ainda não há depoimentos aprovados</p>
+        <p className="text-muted-foreground max-w-md mx-auto">
+          Incentive seus clientes a compartilharem suas experiências! Envie o link desta página para que eles possam deixar um depoimento.
+        </p>
+      </div>
+    );
   }
 
   return (
