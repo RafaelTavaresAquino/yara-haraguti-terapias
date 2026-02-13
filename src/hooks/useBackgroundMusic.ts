@@ -10,89 +10,104 @@ const createAmbientAudio = (audioContext: AudioContext) => {
 
   const nodes: AudioNode[] = [];
 
-  // Warm pad drone (low)
-  const createPad = (freq: number, gain: number) => {
+  // Reverb via convolver
+  const convolver = audioContext.createConvolver();
+  const reverbLen = audioContext.sampleRate * 3;
+  const reverbBuf = audioContext.createBuffer(2, reverbLen, audioContext.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = reverbBuf.getChannelData(ch);
+    for (let i = 0; i < reverbLen; i++) {
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / reverbLen, 2.5);
+    }
+  }
+  convolver.buffer = reverbBuf;
+  const reverbGain = audioContext.createGain();
+  reverbGain.gain.value = 0.6;
+  convolver.connect(reverbGain);
+  reverbGain.connect(masterGain);
+  nodes.push(convolver, reverbGain);
+
+  // Deep breathing drone — very slow, expansive
+  const createBreathingDrone = (freq: number, gain: number, period: number) => {
     const osc = audioContext.createOscillator();
     const g = audioContext.createGain();
     const filter = audioContext.createBiquadFilter();
     osc.type = "sine";
     osc.frequency.value = freq;
     filter.type = "lowpass";
-    filter.frequency.value = 800;
-    filter.Q.value = 1;
-    g.gain.value = gain;
-    osc.connect(filter);
-    filter.connect(g);
-    g.connect(masterGain);
-    osc.start();
-    nodes.push(osc, g, filter);
-
-    // Gentle frequency drift
-    const drift = () => {
-      const target = freq + (Math.random() - 0.5) * 4;
-      osc.frequency.setTargetAtTime(target, audioContext.currentTime, 3);
-      setTimeout(drift, 3000 + Math.random() * 4000);
-    };
-    drift();
-    return { osc, gain: g };
-  };
-
-  // Ethereal shimmer (high harmonics)
-  const createShimmer = (freq: number, gain: number) => {
-    const osc = audioContext.createOscillator();
-    const g = audioContext.createGain();
-    const filter = audioContext.createBiquadFilter();
-    osc.type = "triangle";
-    osc.frequency.value = freq;
-    filter.type = "bandpass";
-    filter.frequency.value = freq;
-    filter.Q.value = 5;
+    filter.frequency.value = 500;
+    filter.Q.value = 0.5;
     g.gain.value = 0;
     osc.connect(filter);
     filter.connect(g);
     g.connect(masterGain);
+    g.connect(convolver);
     osc.start();
     nodes.push(osc, g, filter);
 
-    // Swell in and out
-    const swell = () => {
+    // Breathe in/out
+    const breathe = () => {
       const now = audioContext.currentTime;
-      const duration = 4 + Math.random() * 6;
-      g.gain.setTargetAtTime(gain, now, duration / 3);
-      g.gain.setTargetAtTime(0, now + duration, duration / 3);
-      setTimeout(swell, (duration * 2 + Math.random() * 5) * 1000);
+      g.gain.setTargetAtTime(gain, now, period * 0.3);
+      g.gain.setTargetAtTime(gain * 0.2, now + period * 0.5, period * 0.3);
+      setTimeout(breathe, period * 1000);
     };
-    setTimeout(swell, Math.random() * 5000);
-    return { osc, gain: g };
+    breathe();
   };
 
-  // Create layered pads (C major / Am pentatonic feel)
-  createPad(130.81, 0.15);  // C3
-  createPad(196.0, 0.1);    // G3
-  createPad(261.63, 0.08);  // C4
-  createPad(329.63, 0.06);  // E4
+  // Singing bowl / bell tones — sparse, meditative
+  const createBell = (freq: number, maxGain: number, interval: number) => {
+    const ring = () => {
+      const osc = audioContext.createOscillator();
+      const g = audioContext.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq + (Math.random() - 0.5) * 2;
+      g.gain.value = maxGain;
+      osc.connect(g);
+      g.connect(masterGain);
+      g.connect(convolver);
+      osc.start();
+      // Decay naturally over 6-10s
+      const decay = 6 + Math.random() * 4;
+      g.gain.setTargetAtTime(0, audioContext.currentTime, decay / 4);
+      setTimeout(() => {
+        osc.stop();
+        osc.disconnect();
+        g.disconnect();
+      }, decay * 1000 + 500);
 
-  // Shimmering overtones
-  createShimmer(523.25, 0.04);  // C5
-  createShimmer(659.25, 0.03);  // E5
-  createShimmer(783.99, 0.02);  // G5
-  createShimmer(1046.5, 0.015); // C6
+      setTimeout(ring, (interval + Math.random() * interval) * 1000);
+    };
+    setTimeout(ring, Math.random() * interval * 1000);
+  };
 
-  // Gentle noise layer for texture
+  // Deep drones — root and fifth, breathing slowly
+  createBreathingDrone(65.41, 0.12, 10);   // C2 — very deep foundation
+  createBreathingDrone(98.0, 0.09, 13);    // G2 — fifth
+  createBreathingDrone(130.81, 0.07, 16);  // C3 — octave
+  createBreathingDrone(196.0, 0.04, 18);   // G3 — upper fifth
+
+  // Singing bowls — sparse, peaceful
+  createBell(528, 0.05, 8);    // C5 — "healing frequency"
+  createBell(396, 0.04, 12);   // G4
+  createBell(639, 0.03, 15);   // Eb5 — warm minor touch
+  createBell(741, 0.02, 20);   // F#5 — ethereal
+
+  // Soft white noise — like distant wind
   const bufferSize = audioContext.sampleRate * 2;
   const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
   const data = noiseBuffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1) * 0.01;
+    data[i] = (Math.random() * 2 - 1) * 0.005;
   }
   const noise = audioContext.createBufferSource();
   noise.buffer = noiseBuffer;
   noise.loop = true;
   const noiseFilter = audioContext.createBiquadFilter();
   noiseFilter.type = "lowpass";
-  noiseFilter.frequency.value = 400;
+  noiseFilter.frequency.value = 300;
   const noiseGain = audioContext.createGain();
-  noiseGain.gain.value = 0.3;
+  noiseGain.gain.value = 0.4;
   noise.connect(noiseFilter);
   noiseFilter.connect(noiseGain);
   noiseGain.connect(masterGain);
