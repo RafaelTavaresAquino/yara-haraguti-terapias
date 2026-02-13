@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, User } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Testimonial {
   id: string;
@@ -12,22 +13,40 @@ interface Testimonial {
   created_at: string;
 }
 
+const TestimonialSkeleton = () => (
+  <Card className="border-border/50">
+    <CardContent className="p-6">
+      <div className="flex items-center gap-3 mb-3">
+        <Skeleton className="w-10 h-10 rounded-full" />
+        <div className="space-y-1.5">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-3 w-16" />
+        </div>
+      </div>
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-3/4" />
+    </CardContent>
+  </Card>
+);
+
 const TestimonialsList = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: testimonials = [], isLoading } = useQuery<Testimonial[]>({
+    queryKey: ["approved-testimonials"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_approved_testimonials");
+      if (error) throw error;
+      return (data as Testimonial[]) || [];
+    },
+    staleTime: 5 * 60 * 1000, // 5 min cache
+  });
 
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      const { data } = await supabase.rpc("get_approved_testimonials");
-      setTestimonials((data as Testimonial[]) || []);
-      setLoading(false);
-    };
-
-    fetchTestimonials();
-  }, []);
-
-  if (loading) {
-    return <p className="text-muted-foreground text-center py-8">Carregando depoimentos...</p>;
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        <TestimonialSkeleton />
+        <TestimonialSkeleton />
+      </div>
+    );
   }
 
   if (testimonials.length === 0) {
