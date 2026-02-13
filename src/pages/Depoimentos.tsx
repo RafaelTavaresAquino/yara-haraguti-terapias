@@ -6,10 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Star, Upload, Send, LogIn } from "lucide-react";
+import { Star, Upload, Send, LogIn, Mail } from "lucide-react";
 import { z } from "zod";
 import TestimonialsList from "@/components/TestimonialsList";
-import { Link } from "react-router-dom";
 
 const testimonialSchema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(100),
@@ -26,6 +25,34 @@ const Depoimentos = () => {
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [magicEmail, setMagicEmail] = useState("");
+  const [showEmailInput, setShowEmailInput] = useState(false);
+  const [sendingMagicLink, setSendingMagicLink] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+
+  const handleSendMagicLink = async () => {
+    const emailResult = z.string().trim().email("E-mail inválido").safeParse(magicEmail);
+    if (!emailResult.success) {
+      toast({ title: "Erro", description: "Informe um e-mail válido", variant: "destructive" });
+      return;
+    }
+
+    setSendingMagicLink(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: emailResult.data,
+      options: {
+        emailRedirectTo: `${window.location.origin}/depoimentos`,
+      },
+    });
+    setSendingMagicLink(false);
+
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      setMagicLinkSent(true);
+      toast({ title: "E-mail enviado!", description: "Verifique sua caixa de entrada para acessar." });
+    }
+  };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -173,13 +200,39 @@ const Depoimentos = () => {
         </Card>
       ) : (
         <Card className="text-center py-8">
-          <CardContent>
-            <p className="text-muted-foreground mb-4">Faça login para deixar seu depoimento</p>
-            <Link to="/auth?redirect=/depoimentos">
-              <Button className="gap-2">
-                <LogIn className="h-4 w-4" /> Clique aqui para deixar seu depoimento
-              </Button>
-            </Link>
+          <CardContent className="space-y-4">
+            {magicLinkSent ? (
+              <>
+                <Mail className="h-10 w-10 mx-auto text-accent" />
+                <p className="text-foreground font-medium">E-mail enviado!</p>
+                <p className="text-muted-foreground text-sm">
+                  Verifique sua caixa de entrada e clique no link para acessar e deixar seu depoimento.
+                </p>
+              </>
+            ) : showEmailInput ? (
+              <>
+                <p className="text-muted-foreground mb-2">Informe seu e-mail para receber o link de acesso:</p>
+                <div className="flex gap-2 max-w-sm mx-auto">
+                  <Input
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={magicEmail}
+                    onChange={(e) => setMagicEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSendMagicLink()}
+                  />
+                  <Button onClick={handleSendMagicLink} disabled={sendingMagicLink}>
+                    {sendingMagicLink ? "Enviando..." : "Enviar"}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-muted-foreground mb-4">Compartilhe sua experiência conosco!</p>
+                <Button className="gap-2" onClick={() => setShowEmailInput(true)}>
+                  <LogIn className="h-4 w-4" /> Clique aqui para deixar seu depoimento
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
       )}
