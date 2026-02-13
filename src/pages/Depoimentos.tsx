@@ -130,11 +130,7 @@ const Depoimentos = () => {
       </div>
 
       {/* Form section - only for logged in users */}
-      {authLoading ? (
-        <div className="flex items-center justify-center py-8">
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      ) : user ? (
+      {authLoading ? null : user ? (
         <Card>
           <CardHeader>
             <CardTitle className="font-display text-xl">Deixe seu Depoimento</CardTitle>
