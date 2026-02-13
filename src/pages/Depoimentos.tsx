@@ -17,7 +17,7 @@ const testimonialSchema = z.object({
 });
 
 const Depoimentos = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
@@ -121,7 +121,7 @@ const Depoimentos = () => {
   };
 
   const renderCtaCard = () => {
-    if (authLoading) return null;
+    if (authLoading || isAdmin) return null;
 
     if (user) {
       return (
