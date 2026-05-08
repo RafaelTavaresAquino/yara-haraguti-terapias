@@ -14,13 +14,13 @@ const PontoDeConexao = () => {
         <div>
           <h2 className="font-display text-2xl font-semibold mb-4 text-foreground">O que é o Ponto de Conexão?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            O Ponto de Conexão é um plano de assinatura mensal criado especialmente para quem trabalha com energia — 
+            O Ponto de Conexão é um plano de assinatura mensal criado especialmente para quem trabalha com energia —
             terapeutas, magos, facilitadores energéticos e todos que lidam diariamente com o campo energético de outras pessoas.
           </p>
           <p className="text-muted-foreground leading-relaxed mt-4">
-            Quando você trabalha com energia alheia, seu próprio campo pode ficar sobrecarregado. O Ponto de Conexão 
-            oferece uma manutenção regular para garantir que você esteja sempre limpo, protegido e em equilíbrio para 
-            continuar seu trabalho com excelência.
+            Quando você trabalha com energia alheia, seu próprio campo pode ficar sobrecarregado. O Ponto de Conexão
+            oferece uma manutenção regular para garantir que você esteja sempre limpo, protegido e em equilíbrio para
+            continuar seu trabalho com excelência..
           </p>
         </div>
 
