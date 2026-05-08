@@ -20,7 +20,7 @@ const PontoDeConexao = () => {
           <p className="text-muted-foreground leading-relaxed mt-4">
             Quando você trabalha com energia alheia, seu próprio campo pode ficar sobrecarregado. O Ponto de Conexão
             oferece uma manutenção regular para garantir que você esteja sempre limpo, protegido e em equilíbrio para
-            continuar seu trabalho com excelência..
+            continuar seu trabalho com excelência.
           </p>
         </div>
 
