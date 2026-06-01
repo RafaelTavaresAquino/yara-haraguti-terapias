@@ -1,9 +1,17 @@
 import { Users, Sparkles, Shield, Eye, Waves, Instagram } from "lucide-react";
 import ServicePageLayout from "@/components/ServicePageLayout";
 import { Button } from "@/components/ui/button";
+import SEO from "@/components/SEO";
 
 const PontoDeConexao = () => {
   return (
+    <>
+    <SEO
+      title="Ponto de Conexão | Yara Haraguti"
+      description="Campo mensal de manutenção energética para terapeutas, magos e facilitadores. Mantenha seu campo limpo e equilibrado."
+      path="/ponto-de-conexao"
+      type="service"
+    />
     <ServicePageLayout
       title="Ponto de Conexão"
       subtitle="Campo mensal de manutenção energética para terapeutas, magos e facilitadores que desejam manter seu campo limpo e equilibrado."
@@ -55,7 +63,7 @@ const PontoDeConexao = () => {
               <div key={i} className="flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-card">
                 <item.icon className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-sm">{item.title}</h4>
+                  <h3 className="font-semibold text-sm">{item.title}</h3>
                   <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
                 </div>
               </div>
@@ -77,6 +85,7 @@ const PontoDeConexao = () => {
         </div>
       </div>
     </ServicePageLayout>
+    </>
   );
 };
 
