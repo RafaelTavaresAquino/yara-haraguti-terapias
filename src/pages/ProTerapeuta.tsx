@@ -1,11 +1,19 @@
 import { Briefcase, FileText, Settings, Users, Star, MessageCircle } from "lucide-react";
 import ServicePageLayout from "@/components/ServicePageLayout";
 import { Button } from "@/components/ui/button";
+import SEO from "@/components/SEO";
 
 const WHATSAPP_URL = "https://wa.me/5511958766162?text=Olá%20Yara!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consultoria%20Pró-Terapeuta.";
 
 const ProTerapeuta = () => {
   return (
+    <>
+    <SEO
+      title="Pró-Terapeuta | Consultoria para Terapeutas"
+      description="Consultoria jurídica e administrativa exclusiva para terapeutas que desejam profissionalizar sua prática com segurança."
+      path="/pro-terapeuta"
+      type="service"
+    />
     <ServicePageLayout
       title="Pró-Terapeuta"
       subtitle="Consultoria jurídica e administrativa exclusiva para terapeutas que desejam profissionalizar sua prática."
@@ -48,7 +56,7 @@ const ProTerapeuta = () => {
               <div key={i} className="flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-card">
                 <service.icon className="h-6 w-6 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <h4 className="font-semibold">{service.title}</h4>
+                  <h3 className="font-semibold">{service.title}</h3>
                   <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{service.desc}</p>
                 </div>
               </div>
@@ -72,6 +80,7 @@ const ProTerapeuta = () => {
         </div>
       </div>
     </ServicePageLayout>
+    </>
   );
 };
 
