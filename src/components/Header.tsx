@@ -63,9 +63,9 @@ const Header = () => {
             variant="ghost"
             size="icon"
             onClick={toggle}
-            
             className="text-muted-foreground hover:text-foreground mr-1"
             title={isPlaying ? "Pausar música" : "Tocar música ambiente"}
+            aria-label={isPlaying ? "Pausar música ambiente" : "Tocar música ambiente"}
           >
             {isPlaying ? (
               <Volume2 className="h-4 w-4" />
@@ -127,7 +127,7 @@ const Header = () => {
         {/* Mobile nav */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="lg:hidden">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" aria-label="Abrir menu de navegação">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -137,8 +137,8 @@ const Header = () => {
               <Button
                 variant="ghost"
                 onClick={toggle}
-                
                 className="w-full justify-start gap-2 px-4 py-3 text-muted-foreground hover:text-foreground"
+                aria-label={isPlaying ? "Pausar música ambiente" : "Tocar música ambiente"}
               >
                 {isPlaying ? (
                   <Volume2 className="h-4 w-4" />
