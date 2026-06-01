@@ -1,8 +1,16 @@
 import { Zap, Waves, Leaf, RefreshCw, Star, Sun } from "lucide-react";
 import ServicePageLayout from "@/components/ServicePageLayout";
+import SEO from "@/components/SEO";
 
 const AtendimentosEnergeticos = () => {
   return (
+    <>
+    <SEO
+      title="Atendimentos Energéticos | Yara Haraguti"
+      description="Sessões quinzenais de terapia energética online. Florais de Bach e DNB para liberar bloqueios e restaurar seu equilíbrio."
+      path="/atendimentos-energeticos"
+      type="service"
+    />
     <ServicePageLayout
       title="Atendimentos Energéticos"
       subtitle="Sessões quinzenais dedicadas à liberação de bloqueios energéticos e restauração do seu equilíbrio interior."
@@ -42,7 +50,7 @@ const AtendimentosEnergeticos = () => {
             <div className="p-5 rounded-xl border border-border/50 bg-card">
               <div className="flex items-center gap-3 mb-2">
                 <Leaf className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold">Florais de Bach</h4>
+                <h3 className="font-semibold">Florais de Bach</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Criados pelo Dr. Edward Bach, os Florais de Bach são essências naturais extraídas de flores silvestres 
@@ -53,7 +61,7 @@ const AtendimentosEnergeticos = () => {
             <div className="p-5 rounded-xl border border-border/50 bg-card">
               <div className="flex items-center gap-3 mb-2">
                 <RefreshCw className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold">DNB — Desprogramação Neurobiológica</h4>
+                <h3 className="font-semibold">DNB — Desprogramação Neurobiológica</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 A DNB é uma técnica avançada que atua na desprogramação de padrões neurológicos e biológicos 
@@ -85,6 +93,7 @@ const AtendimentosEnergeticos = () => {
         </div>
       </div>
     </ServicePageLayout>
+    </>
   );
 };
 
