@@ -2,12 +2,18 @@ import { motion } from "framer-motion";
 import { Phone, MessageCircle, Instagram, MapPin, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import SEO from "@/components/SEO";
 
 const WHATSAPP_URL = "https://wa.me/5511958766162?text=Olá%20Yara!%20Gostaria%20de%20saber%20mais%20sobre%20seus%20atendimentos.";
 
 const Contato = () => {
   return (
     <div>
+      <SEO
+        title="Contato | Yara Haraguti"
+        description="Entre em contato com Yara Haraguti via WhatsApp, telefone ou Instagram para agendar seu atendimento online."
+        path="/contato"
+      />
       <section className="gradient-hero py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <motion.div

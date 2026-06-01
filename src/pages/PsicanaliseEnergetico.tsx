@@ -1,8 +1,16 @@
 import { Brain, Heart, Lightbulb, Shield, Star, Flower2 } from "lucide-react";
 import ServicePageLayout from "@/components/ServicePageLayout";
+import SEO from "@/components/SEO";
 
 const PsicanaliseEnergetico = () => {
   return (
+    <>
+    <SEO
+      title="Psicanálise & Energético | Yara Haraguti"
+      description="Atendimento que une psicanálise e técnicas energéticas: Magia Divina, DNB, Florais de Bach, Reiki e mais. Online, para todo o Brasil."
+      path="/psicanalise-energetico"
+      type="service"
+    />
     <ServicePageLayout
       title="Psicanálise & Energético"
       subtitle="Uma abordagem integrativa que une a profundidade da psicanálise com o poder das terapias energéticas para uma transformação completa."
@@ -57,7 +65,7 @@ const PsicanaliseEnergetico = () => {
               <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-secondary/50">
                 <benefit.icon className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">{benefit.title}</h4>
+                  <h3 className="font-semibold text-sm">{benefit.title}</h3>
                   <p className="text-sm text-muted-foreground">{benefit.desc}</p>
                 </div>
               </div>
@@ -80,7 +88,7 @@ const PsicanaliseEnergetico = () => {
               { name: "Cartas Terapêuticas", desc: "Ferramenta intuitiva para acessar conteúdos inconscientes" },
             ].map((tech, i) => (
               <div key={i} className="p-4 rounded-xl border border-border/50 bg-card">
-                <h4 className="font-semibold text-sm text-primary">{tech.name}</h4>
+                <h3 className="font-semibold text-sm text-primary">{tech.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1">{tech.desc}</p>
               </div>
             ))}
@@ -88,6 +96,7 @@ const PsicanaliseEnergetico = () => {
         </div>
       </div>
     </ServicePageLayout>
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import yaraFoto from "@/assets/yara-foto.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import TestimonialsList from "@/components/TestimonialsList";
+import SEO from "@/components/SEO";
 
 const services = [
   {
@@ -74,6 +75,20 @@ const Index = () => {
 
   return (
     <div className="overflow-hidden">
+      <SEO
+        title="Yara Haraguti | Psicanalista & Terapeuta Energética"
+        description="Psicanálise, atendimentos energéticos, harmonização judicial e consultoria para terapeutas. Atendimento online em todo o Brasil."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Yara Haraguti",
+          jobTitle: "Psicanalista e Terapeuta Energética",
+          url: "https://yara-haraguti-terapias.lovable.app/",
+          telephone: "+55-11-95876-6162",
+          sameAs: ["https://instagram.com/yaraharaguti.terapias"],
+        }}
+      />
       {/* Hero */}
       <section ref={heroRef} className="relative gradient-hero overflow-hidden">
         {/* Floating decorative elements */}
@@ -100,6 +115,9 @@ const Index = () => {
               </div>
               <h1 className="font-display text-3xl md:text-6xl font-semibold text-foreground leading-tight mb-4 md:mb-6">
                 Yara <span className="text-gradient-gold">Haraguti</span>
+                <span className="block text-xl md:text-2xl font-normal text-muted-foreground mt-2">
+                  Psicanalista & Terapeuta Energética
+                </span>
               </h1>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6 md:mb-8 max-w-lg">
                 Transforme sua vida através do autoconhecimento e da cura energética. 
@@ -131,7 +149,15 @@ const Index = () => {
                 style={{ scale: heroImageScale }}
                 className="relative w-48 h-48 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg"
               >
-                <img src={yaraFoto} alt="Yara Haraguti - Psicanalista e Terapeuta Energética" className="w-full h-full object-cover object-top" />
+                <img
+                  src={yaraFoto}
+                  alt="Yara Haraguti - Psicanalista e Terapeuta Energética"
+                  width={384}
+                  height={384}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover object-top"
+                />
               </motion.div>
             </motion.div>
           </div>
