@@ -149,7 +149,15 @@ const Index = () => {
                 style={{ scale: heroImageScale }}
                 className="relative w-48 h-48 md:w-96 md:h-96 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg"
               >
-                <img src={yaraFoto} alt="Yara Haraguti - Psicanalista e Terapeuta Energética" className="w-full h-full object-cover object-top" />
+                <img
+                  src={yaraFoto}
+                  alt="Yara Haraguti - Psicanalista e Terapeuta Energética"
+                  width={384}
+                  height={384}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover object-top"
+                />
               </motion.div>
             </motion.div>
           </div>
