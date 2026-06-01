@@ -1,8 +1,16 @@
 import { Scale, Zap, MapPin, Shield, Clock, Star } from "lucide-react";
 import ServicePageLayout from "@/components/ServicePageLayout";
+import SEO from "@/components/SEO";
 
 const HarmonizacaoJudicial = () => {
   return (
+    <>
+    <SEO
+      title="Harmonização Judicial | Yara Haraguti"
+      description="Trabalho energético complementar para harmonizar e destravar processos judiciais. Atendimento à distância em todo o Brasil."
+      path="/harmonizacao-judicial"
+      type="service"
+    />
     <ServicePageLayout
       title="Harmonização de Processos Judiciais"
       subtitle="Uma abordagem energética única que pode harmonizar e destravar o andamento de processos judiciais."
@@ -62,6 +70,7 @@ const HarmonizacaoJudicial = () => {
         </div>
       </div>
     </ServicePageLayout>
+    </>
   );
 };
 
